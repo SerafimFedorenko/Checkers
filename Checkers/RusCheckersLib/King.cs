@@ -22,9 +22,9 @@ namespace RusCheckersLib
             Color = disk.Color;
             Point = disk.Point;
         }
-        public override List<Point> GetAvailableMoves(Board board)
+        public List<Point> GetMoves(Board board)
         {
-            AvailebleMoves = new List<Point>();
+            AvailableMoves = new List<Point>();
             CanCapture = false;
             List<Point> pointsToMove = new List<Point>();
             List<Point> pointsToCapture = new List<Point>();
@@ -58,17 +58,22 @@ namespace RusCheckersLib
                 }
 
             }
-            if(pointsToCapture.Count > 0)
+            if (pointsToCapture.Count > 0)
             {
-                AvailebleMoves.AddRange(pointsToCapture);
+                AvailableMoves.AddRange(pointsToCapture);
                 CanCapture = true;
             }
             else
             {
-                AvailebleMoves.AddRange(pointsToMove);
+                AvailableMoves.AddRange(pointsToMove);
                 CanCapture = false;
             }
-            return AvailebleMoves;
+            return AvailableMoves;
+        }
+        public override List<Point> GetAvailableMoves(Board board)
+        {
+            GetMoves(board);
+            return AvailableMoves;
         }
         public override string ToString()
         {
@@ -90,7 +95,7 @@ namespace RusCheckersLib
             hashCode = hashCode * -1521134295 + Color.GetHashCode();
             hashCode = hashCode * -1521134295 + Point.GetHashCode();
             hashCode = hashCode * -1521134295 + CanCapture.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<Point>>.Default.GetHashCode(AvailebleMoves);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<Point>>.Default.GetHashCode(AvailableMoves);
             return hashCode;
         }
     }

@@ -31,7 +31,7 @@ namespace CheckersLib
         public DiskColor Color { get; set; }
         public Point Point { get; set; }
         public bool CanCapture { get; set; }
-        public List<Point> AvailebleMoves = new List<Point>();
+        public List<Point> AvailableMoves = new List<Point>();
 
         public abstract List<Point> GetAvailableMoves(Board board);
         public Board Move(Board board, Point newPosition)

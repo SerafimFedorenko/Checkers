@@ -19,7 +19,7 @@ namespace RusCheckersLib
         }
         public override List<Point> GetAvailableMoves(Board board)
         {
-            AvailebleMoves = new List<Point>();
+            AvailableMoves = new List<Point>();
             List<Point> moves = new List<Point>() 
             {
                 new Point(Point.X - 1, Point.Y - 1),
@@ -41,14 +41,14 @@ namespace RusCheckersLib
                         board[moves[i].X, moves[i].Y].Disk.Color != Color &&
                         board[moves[i + 1].X, moves[i + 1].Y].Disk == null)
                     {
-                        AvailebleMoves.Add(new Point(moves[i + 1].X, moves[i + 1].Y));
+                        AvailableMoves.Add(new Point(moves[i + 1].X, moves[i + 1].Y));
                         CanCapture = true;
                     }
                     else
                     {
                         if (board[moves[i].X, moves[i].Y].Disk == null)
                         {
-                            AvailebleMoves.Add(new Point(moves[i].X, moves[i].Y));
+                            AvailableMoves.Add(new Point(moves[i].X, moves[i].Y));
                         }
                     }
                 }
@@ -58,12 +58,12 @@ namespace RusCheckersLib
                 //CanCapture = false;
                 for (int i = 0; i < moves.Count; i += 2)
                 {
-                    AvailebleMoves.Remove(moves[i]);
+                    AvailableMoves.Remove(moves[i]);
                 }
             }
-            AvailebleMoves.Remove(moves[6]);
-            AvailebleMoves.Remove(moves[4]);
-            return AvailebleMoves;
+            AvailableMoves.Remove(moves[6]);
+            AvailableMoves.Remove(moves[4]);
+            return AvailableMoves;
         }
         public override string ToString()
         {
@@ -85,7 +85,7 @@ namespace RusCheckersLib
             hashCode = hashCode * -1521134295 + Color.GetHashCode();
             hashCode = hashCode * -1521134295 + Point.GetHashCode();
             hashCode = hashCode * -1521134295 + CanCapture.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<Point>>.Default.GetHashCode(AvailebleMoves);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<Point>>.Default.GetHashCode(AvailableMoves);
             return hashCode;
         }
     }

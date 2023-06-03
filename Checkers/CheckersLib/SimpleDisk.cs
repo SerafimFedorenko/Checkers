@@ -19,7 +19,7 @@ namespace CheckersLib
         }
         public override List<Point> GetAvailableMoves(Board board)
         {
-            AvailebleMoves = new List<Point>();
+            AvailableMoves = new List<Point>();
             List<Point> moves = new List<Point>() 
             { 
                 new Point(Point.X - 1, Point.Y - 1),
@@ -37,14 +37,14 @@ namespace CheckersLib
                         board[moves[i].X, moves[i].Y].Disk.Color != Color &&
                         board[moves[i + 1].X, moves[i + 1].Y].Disk == null)
                     {
-                        AvailebleMoves.Add(new Point(moves[i + 1].X, moves[i + 1].Y));
+                        AvailableMoves.Add(new Point(moves[i + 1].X, moves[i + 1].Y));
                         CanCapture = true;
                     }
                     else
                     {
                         if (board[moves[i].X, moves[i].Y].Disk == null)
                         {
-                            AvailebleMoves.Add(new Point(moves[i].X, moves[i].Y));
+                            AvailableMoves.Add(new Point(moves[i].X, moves[i].Y));
                         }
                     }
                 }
@@ -53,10 +53,10 @@ namespace CheckersLib
             {
                 for (int i = 0; i < moves.Count; i += 2)
                 {
-                    AvailebleMoves.Remove(moves[i]);
+                    AvailableMoves.Remove(moves[i]);
                 }
             }
-            return AvailebleMoves;
+            return AvailableMoves;
         }
         public override string ToString()
         {
