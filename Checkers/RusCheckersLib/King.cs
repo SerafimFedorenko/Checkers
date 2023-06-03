@@ -73,7 +73,28 @@ namespace RusCheckersLib
         public override List<Point> GetAvailableMoves(Board board)
         {
             GetMoves(board);
+            List<Point> capturePoints = GetCapturePoints(board);
+            if(capturePoints.Count > 0)
+            {
+                AvailableMoves = capturePoints;
+            }
             return AvailableMoves;
+        }
+        public List<Point> GetCapturePoints(Board board)
+        {
+            List<Point> capturePoints = new List<Point>();
+            foreach(Point point in AvailableMoves)
+            {
+                Board newBoard = new Board(board);
+
+                newBoard.DoMove(Point, point);
+                ((King)newBoard[point.X, point.Y].Disk).GetMoves(newBoard);
+                if(newBoard[point.X, point.Y].Disk.CanCapture)
+                {
+                    capturePoints.Add(point);
+                }
+            }
+            return capturePoints;
         }
         public override string ToString()
         {

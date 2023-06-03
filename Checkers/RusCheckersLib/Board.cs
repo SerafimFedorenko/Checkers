@@ -20,6 +20,16 @@ namespace RusCheckersLib
                 }
             }
         }
+        public Board(Board board)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    cells[i, j] = new Cell(board.cells[i, j]);
+                }
+            }
+        }
         public Cell this[int x,int y]
         {
             get { return cells[x,y]; }
@@ -111,6 +121,8 @@ namespace RusCheckersLib
                 }
             }
         }
+
+
         public bool CanMove(DiskColor color)
         {
             for (int i = 0; i < 8; i++)

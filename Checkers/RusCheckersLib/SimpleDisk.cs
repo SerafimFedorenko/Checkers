@@ -17,6 +17,11 @@ namespace RusCheckersLib
         {
 
         }
+        public SimpleDisk(Disk disk)
+        {
+            Color = disk.Color;
+            Point = disk.Point;
+        }
         public override List<Point> GetAvailableMoves(Board board)
         {
             AvailableMoves = new List<Point>();
