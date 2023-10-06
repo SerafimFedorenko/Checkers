@@ -54,6 +54,11 @@ namespace RusCheckersLib
             }
             return false;
         }
+        /// <summary>
+        /// Проверяет, может ли данная шашка съесть другую шашку
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
         public bool MayCapture(Board board)
         {
             bool canCapture = false;

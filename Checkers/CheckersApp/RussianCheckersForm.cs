@@ -188,9 +188,11 @@ namespace CheckersApp
             {
                 if (movePoints.Contains(selectedPoint))
                 {
+                    int disksNumberBeforeMove = board.GetDisksNumber();
                     board.DoMove(diskPoint, selectedPoint);
+                    int disksNumberAfterMove = board.GetDisksNumber();
                     board[selectedPoint.X, selectedPoint.Y].Disk.GetAvailableMoves(board);
-                    if(Math.Abs(diskPoint.X - selectedPoint.X) > 1)
+                    if(disksNumberAfterMove - disksNumberBeforeMove != 0)
                     {
                         capturedOnLastMove = true;
                     }

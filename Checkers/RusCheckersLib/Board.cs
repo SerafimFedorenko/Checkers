@@ -142,5 +142,20 @@ namespace RusCheckersLib
             }
             return false;
         }
+        public int GetDisksNumber()
+        {
+            int disksNumber = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (cells[i, j].Disk != null)
+                    {
+                        disksNumber++;
+                    }
+                }
+            }
+            return disksNumber;
+        }
     }
 }
