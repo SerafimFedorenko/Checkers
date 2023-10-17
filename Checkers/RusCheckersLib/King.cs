@@ -74,7 +74,7 @@ namespace RusCheckersLib
         {
             GetMoves(board);
             List<Point> capturePoints = GetCapturePoints(board);
-            if(capturePoints.Count > 0)
+            if(capturePoints.Count > 0 && CanCapture)
             {
                 AvailableMoves = capturePoints;
             }

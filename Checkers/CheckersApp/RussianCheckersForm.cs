@@ -160,7 +160,6 @@ namespace CheckersApp
                     foreach (Point point in movePoints)
                     {
                         diskPoint = position;
-                        //костыль которого быть не должно
                         if (board[point.X, point.Y].Disk == null)
                         {
                             pictureBoxes[point.X, point.Y].BackColor = Color.Gray;
@@ -175,7 +174,6 @@ namespace CheckersApp
                         foreach (Point point in movePoints)
                         {
                             diskPoint = position;
-                            //костыль которого быть не должно
                             if (board[point.X, point.Y].Disk == null)
                             {
                                 pictureBoxes[point.X, point.Y].BackColor = Color.Gray;
@@ -226,6 +224,9 @@ namespace CheckersApp
                 movePoints.Clear();
             }
         }
+        /// <summary>
+        /// Передача хода сопернику
+        /// </summary>
         private void powerTransmission()
         {
             moveColor = (DiskColor)(1 - (int)moveColor);

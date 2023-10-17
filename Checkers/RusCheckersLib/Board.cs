@@ -9,7 +9,7 @@ namespace RusCheckersLib
 {
     public class Board
     {
-        private Cell[,] cells = new Cell[8,8];
+        public Cell[,] cells { get; set; } = new Cell[8, 8];
         public Board()
         {
             for (int i = 0; i < 8; i++)

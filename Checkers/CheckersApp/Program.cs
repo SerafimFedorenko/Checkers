@@ -16,7 +16,7 @@ namespace CheckersApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SelectingForm());
+            Application.Run(new RussianNetworkCheckersForm());
         }
     }
 }

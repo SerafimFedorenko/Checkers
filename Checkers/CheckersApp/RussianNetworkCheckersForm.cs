@@ -4,15 +4,21 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CheckersLib;
+using CheckersNetworkLib;
+using RusCheckersLib;
+using System.Threading;
 
 namespace CheckersApp
 {
-    public partial class EnglishCheckersForm : Form
+    public partial class RussianNetworkCheckersForm : Form
     {
+        List<int> messageNumbers = new List<int>();
+        Player player;
+        bool canMove = false;
+        bool capturedOnLastMove = false;
         string[] moveStrings = { "Ход белых", "Ход чёрных" };
         string[] colorNames = { "Белые", "Чёрные" };
         Point diskPoint;
@@ -21,7 +27,9 @@ namespace CheckersApp
         DiskColor moveColor = DiskColor.White;
         PictureBox[,] pictureBoxes = new PictureBox[8, 8];
         Board board = new Board();
-        public EnglishCheckersForm()
+        bool positionSended = false;
+
+        public RussianNetworkCheckersForm()
         {
             InitializeComponent();
             Icon = new Icon(Environment.CurrentDirectory + "\\pictures\\icon.ico");
@@ -119,12 +127,12 @@ namespace CheckersApp
                         }
                         else
                         {
-                            if(pictureBoxes[i, j].Image != null)
+                            if (pictureBoxes[i, j].Image != null)
                             {
                                 pictureBoxes[i, j].Image.Dispose();
                                 pictureBoxes[i, j].Image = null;
                             }
-                            
+
                         }
                     }
                 }
@@ -151,9 +159,9 @@ namespace CheckersApp
             fillCells();
             selectedPoint = position;
             pictureBoxes[position.X, position.Y].BackColor = Color.Green;
-            if (board[position.X, position.Y].Disk != null && board[position.X, position.Y].Disk.Color == moveColor)
+            if (board[position.X, position.Y].Disk != null && board[position.X, position.Y].Disk.Color == moveColor && canMove)
             {
-                if(!board[position.X, position.Y].Disk.MayCapture(board))
+                if (!board[position.X, position.Y].Disk.MayCapture(board))
                 {
                     movePoints = board[position.X, position.Y].Disk.GetAvailableMoves(board);
                     foreach (Point point in movePoints)
@@ -167,7 +175,7 @@ namespace CheckersApp
                 }
                 else
                 {
-                    if(board[position.X, position.Y].Disk.MayCapture(board) && board[position.X, position.Y].Disk.CanCapture)
+                    if (board[position.X, position.Y].Disk.MayCapture(board) && board[position.X, position.Y].Disk.CanCapture)
                     {
                         movePoints = board[position.X, position.Y].Disk.GetAvailableMoves(board);
                         foreach (Point point in movePoints)
@@ -185,10 +193,40 @@ namespace CheckersApp
             {
                 if (movePoints.Contains(selectedPoint))
                 {
+                    int disksNumberBeforeMove = board.GetDisksNumber();
                     board.DoMove(diskPoint, selectedPoint);
-                    powerTransmission();
+                    int disksNumberAfterMove = board.GetDisksNumber();
+                    messageNumbers.Add(diskPoint.X);
+                    messageNumbers.Add(diskPoint.Y);
+
+                    messageNumbers.Add(selectedPoint.X);
+                    messageNumbers.Add(selectedPoint.Y);
+                    
+                    board[selectedPoint.X, selectedPoint.Y].Disk.GetAvailableMoves(board);
+                    if (disksNumberAfterMove - disksNumberBeforeMove != 0)
+                    {
+                        capturedOnLastMove = true;
+                    }
+                    else
+                    {
+                        capturedOnLastMove = false;
+                    }
                     fillLikeBoard();
                     fillCells();
+                    Refresh();
+                    if (!capturedOnLastMove)
+                    {
+                        powerTransmission();
+                        positionSended = true;
+                    }
+                    else
+                    {
+                        if (!board[selectedPoint.X, selectedPoint.Y].Disk.CanCapture)
+                        {
+                            powerTransmission();
+                            positionSended = true;
+                        }
+                    }
                     if (!board.CanMove(moveColor))
                     {
                         MessageBox.Show(colorNames[(int)moveColor] + " победили!");
@@ -202,7 +240,36 @@ namespace CheckersApp
                 movePoints.Clear();
             }
         }
+        private void sendPosition()
+        {
+            string message = JsonSerializer.Serialize(messageNumbers);
+            player.Send(message);
+            messageNumbers.Clear();
+            fillLikeBoard();
+            fillCells();
+            canMove = false;
+            //moveColor = (DiskColor)(1 - (int)moveColor);
+            moveLabel.Text = moveStrings[1 - (int)moveColor];
+        }
 
+        private void getPosition()
+        {
+            string message = player.Receive();
+            List<int> numbers = JsonSerializer.Deserialize<List<int>>(message);
+            board.Expand();
+            for(int i = 0;i < numbers.Count();i = i + 4)
+            {
+                board.DoMove(new Point(numbers[i], numbers[i + 1]), new Point(numbers[i + 2], numbers[i + 3]));
+            }
+            board.Expand();
+            fillLikeBoard();
+            canMove = true;
+        }
+        private void powerTransmission()
+        {
+            sendPosition();
+            getPosition();
+        }
         private PictureBox createPictureBox(Point point, Color color)
         {
             return new PictureBox
@@ -217,51 +284,45 @@ namespace CheckersApp
                 SizeMode = PictureBoxSizeMode.Zoom
             };
         }
-        private void powerTransmission()
-        {
-            moveColor = (DiskColor)(1 - (int)moveColor);
-            board.Expand();
-            moveLabel.Text = moveStrings[1 - (int)moveColor];
-        }
+
         private void agreeButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Ничья!");
-            foreach (PictureBox pictureBox in pictureBoxes)
-            {
-                pictureBox.Visible = true;
-            }
-            startGame();
+            //MessageBox.Show("Ничья!");
+            //foreach (PictureBox pictureBox in pictureBoxes)
+            //{
+            //    pictureBox.Visible = true;
+            //}
+            //startGame();
         }
 
         private void drawButton_Click(object sender, EventArgs e)
         {
-            powerTransmission();
-            foreach (PictureBox pictureBox in pictureBoxes)
-            {
-                pictureBox.Visible = false;
-            }
-            drawButton.Visible = false;
-            askToDrawLabel.Visible = true;
-            agreeButton.Visible = true;
-            refuseButton.Visible = true;
+            //foreach (PictureBox pictureBox in pictureBoxes)
+            //{
+            //    pictureBox.Visible = false;
+            //}
+            //drawButton.Visible = false;
+            //askToDrawLabel.Visible = true;
+            //agreeButton.Visible = true;
+            //refuseButton.Visible = true;
         }
 
         private void refuseButton_Click(object sender, EventArgs e)
         {
 
-            askToDrawLabel.Visible = false;
-            agreeButton.Visible = false;
-            refuseButton.Visible = false;
-            powerTransmission();
-            foreach (PictureBox pictureBox in pictureBoxes)
-            {
-                pictureBox.Visible = true;
-            }
+            //askToDrawLabel.Visible = false;
+            //agreeButton.Visible = false;
+            //refuseButton.Visible = false;
+            //powerTransmission();
+            //foreach (PictureBox pictureBox in pictureBoxes)
+            //{
+            //    pictureBox.Visible = true;
+            //}
         }
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            Point[,] locations = new Point[8,8];
+            Point[,] locations = new Point[8, 8];
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -269,13 +330,13 @@ namespace CheckersApp
                     locations[i, j] = new Point(5 + i * 50, 5 + j * 50);
                 }
             }
-            for (int i = 0;i < 8;i++)
+            for (int i = 0; i < 8; i++)
             {
-                for(int j = 0;j < 8;j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    pictureBoxes[i, j].Location = 
+                    pictureBoxes[i, j].Location =
                         new Point(
-                            (locations[i, j].X) * Size.Width / 600, 
+                            (locations[i, j].X) * Size.Width / 600,
                             (locations[i, j].Y) * Size.Height / 450
                             );
                     pictureBoxes[i, j].Width = 50 * Size.Width / 600;
@@ -307,6 +368,26 @@ namespace CheckersApp
                     415 * Size.Width / 600,
                     296 * Size.Height / 450
                     );
+        }
+
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            player = new Client();
+            MessageBox.Show(player.ipAddress.ToString());
+            moveColor = (DiskColor)(1 - (int)moveColor);
+            moveLabel.Text = moveStrings[1 - (int)moveColor];
+            board.Expand();
+            fillLikeBoard();
+            fillCells();
+            canMove = false;
+            getPosition();
+        }
+
+        private void CreateButton_Click(object sender, EventArgs e)
+        {
+            player = new Server();
+            MessageBox.Show(player.ipAddress.ToString());
+            canMove = true;
         }
     }
 }
