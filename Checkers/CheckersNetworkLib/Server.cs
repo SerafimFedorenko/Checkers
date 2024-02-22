@@ -16,12 +16,12 @@ namespace CheckersNetworkLib
         {
             //IPHostEntry host = Dns.GetHostEntry("localhost");
             //ipAddress = host.AddressList[0].MapToIPv4();
-            ipAddress = IPAddress.Parse("192.168.43.254");
-            //ipAddress = IPAddress.Parse("127.0.0.1");
+            //ipAddress = IPAddress.Parse("192.168.43.254");
+            ipAddress = IPAddress.Parse("127.0.0.1");
             endPoint = new IPEndPoint(ipAddress, 11000);
             Socket handler = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             handler.Bind(endPoint);
-            handler.Listen(10);
+            handler.Listen(1);
             sender = handler.Accept();
         }
     }

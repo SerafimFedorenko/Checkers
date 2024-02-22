@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using CheckersNetworkLib;
 using RusCheckersLib;
 using System.Threading;
+using System.Reflection.Emit;
 
 namespace CheckersApp
 {
@@ -248,7 +249,7 @@ namespace CheckersApp
             fillLikeBoard();
             fillCells();
             canMove = false;
-            //moveColor = (DiskColor)(1 - (int)moveColor);
+            moveColor = (DiskColor)(1 - (int)moveColor);
             moveLabel.Text = moveStrings[1 - (int)moveColor];
         }
 
@@ -264,6 +265,8 @@ namespace CheckersApp
             board.Expand();
             fillLikeBoard();
             canMove = true;
+            moveColor = (DiskColor)(1 - (int)moveColor);
+            moveLabel.Text = moveStrings[1 - (int)moveColor];
         }
         private void powerTransmission()
         {
@@ -374,8 +377,6 @@ namespace CheckersApp
         {
             player = new Client();
             MessageBox.Show(player.ipAddress.ToString());
-            moveColor = (DiskColor)(1 - (int)moveColor);
-            moveLabel.Text = moveStrings[1 - (int)moveColor];
             board.Expand();
             fillLikeBoard();
             fillCells();
